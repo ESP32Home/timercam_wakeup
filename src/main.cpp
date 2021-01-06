@@ -5,6 +5,8 @@
 #include "led.h"
 #include "bmm8563.h"
 
+const uint32_t sleep_sec = 5;
+
 void led_breathe_test() {
   for (int16_t i = 0; i < 1024; i++) {
     led_brightness(i);
@@ -27,7 +29,7 @@ void setup() {
   bmm8563_init();
 
   // 5 sec later will wake up
-  bmm8563_setTimerIRQ(30);
+  bmm8563_setTimerIRQ(sleep_sec);
   
   // rtc_date_t date;
   // date.year = 2020;
@@ -43,13 +45,15 @@ void setup() {
 void loop() {
   rtc_date_t date;
   bmm8563_getTime(&date);
+
   Serial.printf("Time: %d/%d/%d %02d:%02d:%-2d\r\n", date.year, date.month, date.day, date.hour, date.minute, date.second);
   Serial.printf("volt: %d mv\r\n", bat_get_voltage());
 
   // disable bat output, will wake up after 5 sec, Sleep current is 1~2μA
   bat_disable_output();
 
-  // if usb not connect, will not in here;
-  esp_deep_sleep(5000000);
+  // here if USB is connected as battery disabled and still have power
+  esp_deep_sleep(sleep_sec*1000000);
   esp_deep_sleep_start();
+
 }
