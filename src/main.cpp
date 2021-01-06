@@ -27,7 +27,7 @@ void setup() {
   bmm8563_init();
 
   // 5 sec later will wake up
-  bmm8563_setTimerIRQ(5);
+  bmm8563_setTimerIRQ(30);
   
   // rtc_date_t date;
   // date.year = 2020;
